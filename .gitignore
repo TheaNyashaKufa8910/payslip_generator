@@ -1,0 +1,71 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+env/
+venv/
+ENV/
+.venv/
+.python-version
+
+# Distribution / packaging
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# Logs and local settings
+*.log
+*.pot
+*.mo
+*.sqlite3
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# PyInstaller
+# Usually contains pyc files and logs
+*.manifest
+*.spec
+
+# VS Code
+.vscode/
+
+# MyPy
+.mypy_cache/
+
+# Pylint
+.pylint.d/
+
+# Environments
+.env
+.env.*
+
+# macOS / Linux / Windows files
+.DS_Store
+Thumbs.db

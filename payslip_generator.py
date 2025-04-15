@@ -1,14 +1,26 @@
 import pandas as pd
 try:
-    df= pd.read_excel("employees.xlsx")
-    df["Net Salary"] = df["BASIC SALARY"]+ df["ALLOWANCES"]- df["DEDUCTIONS"]
+    df = pd.read_excel("employees.xlsx")
+    df["BASIC SALARY"] = pd.to_numeric(df["BASIC SALARY"], errors="coerce")
+    df["ALLOWANCES"] = pd.to_numeric(df["ALLOWANCES"], errors="coerce")
+    df["DEDUCTIONS"] = pd.to_numeric(df["DEDUCTIONS"], errors="coerce")
+    df = df.drop(columns=["NET SALARY"], errors="ignore")  # Clean up if exists
+    df["NET SALARY"] = df["BASIC SALARY"] + df["ALLOWANCES"] - df["DEDUCTIONS"]
+
     print("Employee data loaded successfully")
     print(df.head())
 
+
 except FileNotFoundError:
-    print("Error:'employees.xlsx' file not found")
+    print("Error: 'employees.xlsx' file not found")
+    df = None
+except PermissionError:
+    print("Error: Permission denied while accessing 'employees.xlsx'. Close it if it's open in another program.")
+    df = None
 except Exception as e:
-    print(f"An error occured: {e}")
+    print(f"An error occurred: {e}")
+    df = None
+
 
 
 
@@ -32,16 +44,16 @@ def generate_payslip(employee):
     pdf.cell(100, 10, employee["NAME"],0, ln=True)
 
     pdf.cell(50, 10, f"BASIC SALARY:", 0)
-    pdf.cell(100, 10, f"${employee['BASIC SALARY']:.2f}", 0, ln=True)
+    pdf.cell(100, 10, f"${float(employee['BASIC SALARY']):,.2f}", 0, ln=True)
 
     pdf.cell(50, 10, f"ALLOWANCES:", 0)
-    pdf.cell(100, 10, f"${employee['ALLOWANCES']:.2f}", 0, ln=True)
+    pdf.cell(100, 10, f"${float(employee['ALLOWANCES']):,.2f}", 0, ln=True)
 
     pdf.cell(50, 10, f"DEDUCTIONS:", 0)
-    pdf.cell(100, 10, f"${employee['DEDUCTIONS']:.2f}", 0, ln=True)
+    pdf.cell(100, 10, f"${float(employee['DEDUCTIONS']):,.2f}", 0, ln=True)
 
-    pdf.cell(50, 10, f"Net Salary:", 0)
-    pdf.cell(100, 10, f"${employee['Net Salary']:.2f}", 0, ln=True)
+    pdf.cell(50, 10, f"NET SALARY:", 0)
+    pdf.cell(100, 10, f"${float(employee['NET SALARY']):,.2f}", 0, ln=True)
 
     # Save the file
     filename = f"payslips/{employee['EMPLOYEE ID']}.pdf"
@@ -52,21 +64,30 @@ for _, employee in df.iterrows():
 
 import yagmail
 import os
-email_user = os.getenv("EMAIL_USER")
-email_password = os.getenv("EMAIL_PASSWORD")
-yag = yagmail.SMTP(user=email_user, password=email_password)
+email_user = os.getenv("nyashakufa29@gmail.com")
+email_password = os.getenv("wijj yygc bmqc vktl")
+yag = yagmail.SMTP(user="nyashakufa29@gmail.com", password="wijj yygc bmqc vktl", host='smtp.gmail.com')
+
 def send_payslip(employee):
     subject = "Your Payslip For This Month"
-    body =f"Dear{employee['NAME']},\n\nPlease find your attached payslip for this month.\n\nBest regards,\nWaMambo Holdings"
+    body = f"Dear  {employee['NAME']},\n\nPlease find your attached payslip for this month.\n\nBest regards,\nWaMambo Holdings"
     attachment = f"payslips/{employee['EMPLOYEE ID']}.pdf"
 
-try:
+    try:
         yag.send(to=employee["EMAIL"], subject=subject, contents=body, attachments=attachment)
-        print(f"Payslip sent to {employee['Name']} at {employee['Email']}")
-except Exception as e:
-        print(f"Error sending email to {employee['Name']}: {e}")
+        print(f"Payslip sent to {employee['NAME']} at {employee['EMAIL']}")
+    except Exception as e:
+        print(f"Error sending email to {employee['NAME']}: {e}")
+
 
 # Send payslips to all employees
-for _, employee in df.iterrows():
-    send_payslip(employee)
+if df is not None:
+    for _, employee in df.iterrows():
+        generate_payslip(employee)
+
+    for _, employee in df.iterrows():
+        send_payslip(employee)
+
+    #zip_payslips()
+
     
